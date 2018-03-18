@@ -25,7 +25,6 @@ namespace WpfApp1
                 return Polygons.Select(x => x.Edges.Select(e => e.Nodes).SelectMany(e => e)).SelectMany(x => x).Distinct().ToList();
             }
         }
-
         
     }
 
@@ -782,6 +781,19 @@ namespace WpfApp1
         {
             return string.Join(" ", Nodes.Select(n => n.NodeID));
             return base.ToString();
+        }
+
+        public Node GetC(Edge edge)
+        {
+            var node = Nodes.FirstOrDefault(n => edge.Nodes.All(ne => ne != n));
+            return node;
+        }
+
+        public double GetCross(Edge edge)
+        {
+            Node node = GetC(edge);
+            var result = edge.Cross(node);
+            return result;
         }
     }
 }
