@@ -6,7 +6,7 @@
         xmlns:HelixToolkit="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="650" Width="650">
+        Title="MainWindow" Height="700" Width="650">
     <Grid>
 
         <HelixToolkit:HelixViewport3D ZoomExtentsWhenLoaded="True" Width="650" Margin="0,0,0,35">
@@ -35,7 +35,12 @@
             </ModelVisual3D>
             <HelixToolkit:GridLinesVisual3D Width="8" Length="8" MinorDistance="1" MajorDistance="1" Thickness="0.01"/>
         </HelixToolkit:HelixViewport3D>
-        <Button Content="First" HorizontalAlignment="Left" Margin="10,600,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
-        <Button Content="Second" HorizontalAlignment="Left" Margin="100,600,0,0" VerticalAlignment="Top" Width="75" Click="Button2_Click"/>
+        <Button Content="Gen" HorizontalAlignment="Left" Margin="10,600,0,0" VerticalAlignment="Top" Width="75" Click="Gen_Click"/>
+        <Button Content="Load" HorizontalAlignment="Left" Margin="100,600,0,0" VerticalAlignment="Top" Width="75" Click="Load_Click"/>
+        <Button Content="Save" HorizontalAlignment="Left" Margin="200,600,0,0" VerticalAlignment="Top" Width="75" Click="Save_Click"/>
+        <Button Content="First" HorizontalAlignment="Left" Margin="300,600,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Button Content="Second" HorizontalAlignment="Left" Margin="400,600,0,0" VerticalAlignment="Top" Width="75" Click="Button2_Click"/>
+        <Label Name="Avr" Margin="400,600,0,0" Width="50" Height="50"></Label>
+        <Label Name="Dis" Margin="530,600,0,0" Width="50" Height="50"></Label>
     </Grid>
 </Window>

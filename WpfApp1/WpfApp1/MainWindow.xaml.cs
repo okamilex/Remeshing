@@ -29,6 +29,10 @@ namespace WpfApp1
         List<Node> nodes = new List<Node>();
         public Polygon polygon;
 
+        public string LoadPath = @"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\test1.obj";
+        public string SavePath;
+        public string ShowPath;
+
         public double rand
         {
             get
@@ -45,21 +49,7 @@ namespace WpfApp1
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Graph.Polygons = new List<Polygon>();
-            nodes = new List<Node>();
-
-            LoadObj();
-
-            //genObj();
-
-            //Remesh1();
-           // Remesh2();
-           // Remesh2B();
-            Remesh2C();
-
-            SaveAndShow();
-
-
+            Remesh1();
         }
 
         public void Remesh1()
@@ -308,7 +298,7 @@ namespace WpfApp1
         void LoadObj()
         {
             List<String> poligonSrtings = new List<string>();
-            StreamReader sr = new StreamReader(@"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\test1.obj");
+            StreamReader sr = new StreamReader(LoadPath);
             //StreamReader sr = new StreamReader(@"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\MaleLow.obj");
             while (!sr.EndOfStream)
             {
@@ -334,16 +324,19 @@ namespace WpfApp1
                 var c = nodes[int.Parse(li[3]) - 1];
                 Graph.Polygons.Add(new Polygon(a, b, c));
             }
+            ShowPath = LoadPath;
+            Show();
         }
 
         void SaveAndShow(int i = -1)
         {
             var max = Graph.Nodes.Max(n => Math.Abs(n.X));
 
-            var s = @"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\test2.obj";
+            var s = SavePath;
             if (i > -1)
             {
-                s = @"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\test2" + i + ".obj";
+                var s_ext = System.IO.Path.GetFileNameWithoutExtension(s);
+                s = s_ext + i + ".obj";
             }
             using (StreamWriter sw = new StreamWriter(s))
             {
@@ -372,14 +365,32 @@ namespace WpfApp1
             }
 
 
+            ShowPath = s;
+            Show();
+        }
 
-
+        void Show()
+        {
+            var s = ShowPath;
             ObjReader CurrentHelixObjReader = new ObjReader();
             // Model3DGroup MyModel = CurrentHelixObjReader.Read(@"D:\3DModel\dinosaur_FBX\dinosaur.fbx");
-            Model3DGroup MyModel = CurrentHelixObjReader.Read(@"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\test2.obj");
+            Model3DGroup MyModel = CurrentHelixObjReader.Read(s);
 
             model.Content = MyModel;
             //MyModel.Children.Add(MyModel);
+
+            List<double> crossings = new List<double>();
+            foreach (var polygon in Graph.Polygons)
+            {
+                crossings.Add(polygon.GetCross(polygon.Edges[0]));
+                crossings.Add(polygon.GetCross(polygon.Edges[1]));
+                crossings.Add(polygon.GetCross(polygon.Edges[2]));
+            }
+            var sum = crossings.Sum();
+            var avr = crossings.Average();
+            Avr.Content = avr;
+            var dis = crossings.Sum(x => x - avr) / crossings.Count;
+            Dis.Content = dis;
         }
 
         void genObj()
@@ -557,7 +568,39 @@ namespace WpfApp1
 
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
+             //Remesh2();
+             //Remesh2B();
+             Remesh2C();
+        }
 
+        private void Gen_Click(object sender, RoutedEventArgs e)
+        {
+            Graph.Polygons = new List<Polygon>();
+            nodes = new List<Node>();
+
+            genObj();
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
+            var sfd = new Microsoft.Win32.SaveFileDialog() { Filter = "3D objects |*.obj" };
+            var result = sfd.ShowDialog();
+            if (result == false) return;
+            SavePath = sfd.FileName;
+            SaveAndShow();
+        }
+
+        private void Load_Click(object sender, RoutedEventArgs e)
+        {
+            var ofd = new Microsoft.Win32.OpenFileDialog() { Filter = "3D objects |*.obj" };
+            var result = ofd.ShowDialog();
+            if (result == false) return;
+            LoadPath = ofd.FileName;
+
+            Graph.Polygons = new List<Polygon>();
+            nodes = new List<Node>();
+
+            LoadObj();
         }
     }
 }
