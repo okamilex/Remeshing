@@ -554,5 +554,10 @@ namespace WpfApp1
             polygon = new Polygon(temp[1], tempN[1], tempN[0]);
             Graph.Polygons.Add(polygon);
         }
+
+        private void Button2_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
