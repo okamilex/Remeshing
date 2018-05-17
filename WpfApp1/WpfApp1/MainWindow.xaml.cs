@@ -17,6 +17,7 @@ using System.IO;
 using HelixToolkit.Wpf;
 using System.Windows.Media.Converters;
 using System.Xml.Linq;
+using Model;
 
 namespace WpfApp1
 {
@@ -27,7 +28,7 @@ namespace WpfApp1
     {
         Random Rand = new Random();
         List<Node> nodes = new List<Node>();
-        public Polygon polygon;
+        public Model.Polygon polygon;
 
         public string LoadPath = @"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\test1.obj";
         public string SavePath;
@@ -322,7 +323,7 @@ namespace WpfApp1
                 var a = nodes[int.Parse(li[1]) - 1];
                 var b = nodes[int.Parse(li[2]) - 1];
                 var c = nodes[int.Parse(li[3]) - 1];
-                Graph.Polygons.Add(new Polygon(a, b, c));
+                Graph.Polygons.Add(new Model.Polygon(a, b, c));
             }
             ShowPath = LoadPath;
             Show();
@@ -434,9 +435,9 @@ namespace WpfApp1
                     C = nodes[0];
                     D = nodes[1];
                 }
-                polygon = new Polygon(A, B, C);
+                polygon = new Model.Polygon(A, B, C);
                 Graph.Polygons.Add(polygon);
-                polygon = new Polygon(B, C, D);
+                polygon = new Model.Polygon(B, C, D);
                 Graph.Polygons.Add(polygon);
             }
             ////////////////////////////////////////////////////////////////////////////
@@ -471,9 +472,9 @@ namespace WpfApp1
                 count = nodes.Count;
                 var E = nodes[count - 2];
                 var F = nodes[count - 1];
-                polygon = new Polygon(E, A, C);
+                polygon = new Model.Polygon(E, A, C);
                 Graph.Polygons.Add(polygon);
-                polygon = new Polygon(F, B, D);
+                polygon = new Model.Polygon(F, B, D);
                 Graph.Polygons.Add(polygon);
             }
 
@@ -501,9 +502,9 @@ namespace WpfApp1
                         var edges = Graph.Edges.Where(edge => edge.Nodes.Contains(A) && edge.Nodes.Any(n => n.i > A.i));
                         var B = edges.FirstOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID);
                         var C = edges.LastOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID);
-                        polygon = new Polygon(N, A, B);
+                        polygon = new Model.Polygon(N, A, B);
                         Graph.Polygons.Add(polygon);
-                        polygon = new Polygon(N, A, C);
+                        polygon = new Model.Polygon(N, A, C);
                         Graph.Polygons.Add(polygon);
                     }
                 }
@@ -535,15 +536,15 @@ namespace WpfApp1
                     var tempNodes = edges.Select(edge => edge.Nodes.FirstOrDefault(n => n.NodeID != A.NodeID)).ToList().OrderBy(n => n.j);
                     var B = tempNodes.FirstOrDefault();//.Nodes.FirstOrDefault(n => n.NodeID != A.NodeID);
                     var C = tempNodes.LastOrDefault();//.Nodes.FirstOrDefault(n => n.NodeID != A.NodeID);
-                    polygon = new Polygon(N, A, B);
+                    polygon = new Model.Polygon(N, A, B);
                     Graph.Polygons.Add(polygon);
-                    polygon = new Polygon(N, A, C);
+                    polygon = new Model.Polygon(N, A, C);
                     Graph.Polygons.Add(polygon);
                     if (temp.Count >= 2)
                     {
-                        polygon = new Polygon(N, tempK[k], temp[k]);
+                        polygon = new Model.Polygon(N, tempK[k], temp[k]);
                         Graph.Polygons.Add(polygon);
-                        polygon = new Polygon(N, temp[0], temp[1]);
+                        polygon = new Model.Polygon(N, temp[0], temp[1]);
                         Graph.Polygons.Add(polygon);
                         temp[k] = N;
                         tempK[k] = C;
@@ -556,13 +557,13 @@ namespace WpfApp1
                     }
                 }
             }
-            polygon = new Polygon(tempN[1], tempK[1], temp[1]);
+            polygon = new Model.Polygon(tempN[1], tempK[1], temp[1]);
             Graph.Polygons.Add(polygon);
-            polygon = new Polygon(tempN[0], tempK[0], temp[0]);
+            polygon = new Model.Polygon(tempN[0], tempK[0], temp[0]);
             Graph.Polygons.Add(polygon);
-            polygon = new Polygon(temp[0], temp[1], tempN[0]);
+            polygon = new Model.Polygon(temp[0], temp[1], tempN[0]);
             Graph.Polygons.Add(polygon);
-            polygon = new Polygon(temp[1], tempN[1], tempN[0]);
+            polygon = new Model.Polygon(temp[1], tempN[1], tempN[0]);
             Graph.Polygons.Add(polygon);
         }
 
@@ -575,7 +576,7 @@ namespace WpfApp1
 
         private void Gen_Click(object sender, RoutedEventArgs e)
         {
-            Graph.Polygons = new List<Polygon>();
+            Graph.Polygons = new List<Model.Polygon>();
             nodes = new List<Node>();
 
             genObj();
@@ -597,7 +598,7 @@ namespace WpfApp1
             if (result == false) return;
             LoadPath = ofd.FileName;
 
-            Graph.Polygons = new List<Polygon>();
+            Graph.Polygons = new List<Model.Polygon>();
             nodes = new List<Node>();
 
             LoadObj();
