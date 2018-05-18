@@ -144,6 +144,10 @@
     <Content Include="x86\d3dcompiler_47.dll" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AdaptiveRemeshing\AdaptiveRemeshing.csproj">
+      <Project>{670a2e5e-99ab-4062-aec5-f6502991c5d9}</Project>
+      <Name>AdaptiveRemeshing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HarmonicMapper\HarmonicMapper.csproj">
       <Project>{dfa7fdb5-0a6f-42a4-a295-b2d6467b4e50}</Project>
       <Name>HarmonicMapper</Name>
