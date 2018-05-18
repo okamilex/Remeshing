@@ -10,7 +10,7 @@ namespace HarmonicMapper
 {
     public class HarmonicMapperParser
     {
-        public string FilePath = @"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\test1.obj";
+        public string FilePath = @"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\obj.m";
         public string MFilePath;
 
         List<Node> nodes = new List<Node>();
@@ -23,7 +23,7 @@ namespace HarmonicMapper
             if (i > -1)
             {
                 var s_ext = System.IO.Path.GetFileNameWithoutExtension(s);
-                s = s_ext + i + ".obj";
+                s = s_ext + i + ".m";
             }
             using (StreamWriter sw = new StreamWriter(s))
             {
@@ -36,7 +36,10 @@ namespace HarmonicMapper
 
                 foreach (var node in Graph.Nodes.OrderBy(n => n.NodeID))
                 {
-                    swi = swi + "v " + (node.X - max / 2) + " " + node.Y + " " + node.Z + "\n";
+                    var twoD = "";
+                    if (node.TwoDX != null && node.TwoDY != null)
+                        twoD = " uv=(" + node.TwoDX + " " + node.TwoDY + ")";
+                    swi = swi + "Vertex " + node.NodeID + " " + node.X + " " + node.Y + " " + node.Z + " {rgb=(" + node.RGB + ")" + twoD + "}" + "\n";
                 }
                 foreach (var polygonForWrit in Graph.Polygons)
                 {
@@ -44,7 +47,7 @@ namespace HarmonicMapper
 
                     if (nodesOfP.Count > 2)
                     {
-                        swi = swi + "f " + nodesOfP[0].NodeID + " " + nodesOfP[1].NodeID + " " + nodesOfP[2].NodeID +
+                        swi = swi + "Face " + polygonForWrit.PolygonID + " " + nodesOfP[0].NodeID + " " + nodesOfP[1].NodeID + " " + nodesOfP[2].NodeID +
                               "\n";
                     }
                 }
@@ -63,11 +66,12 @@ namespace HarmonicMapper
                 if (!string.IsNullOrEmpty(s))
                 {
                     var lit = s.Split(' ');
-                    if (lit[0].Equals("v"))
+                    if (lit[0].Equals("Vertex"))
                     {
-                        nodes.Add(new Node(s, nodes.Count + 1));
+                        var l = s.Split('{');
+                        nodes.Add(new Node(l));
                     }
-                    else if (lit[0].Equals("f"))
+                    else if (lit[0].Equals("Face"))
                     {
                         poligonSrtings.Add(s);
                     }

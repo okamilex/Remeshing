@@ -14,8 +14,8 @@ namespace Model
         public double Y { get; set; }
         public double Z { get; set; }
 
-        public double TwoDX { get; set; }
-        public double TwoDY { get; set; }
+        public double? TwoDX { get; set; }
+        public double? TwoDY { get; set; }
 
         public Color RGB { get; set; }
 
@@ -204,6 +204,21 @@ namespace Model
             X = double.Parse(l[1]);
             Y = double.Parse(l[2]);
             Z = double.Parse(l[3]);
+        }
+
+        public Node(String[] s)
+        {
+            var l = s[0].Split(' ');
+            NodeID = int.Parse(l[1]);
+            
+            X = double.Parse(l[2]);
+            Y = double.Parse(l[3]);
+            Z = double.Parse(l[4]);
+
+            var rgbS = s[2].Split(')')[0].Split('=')[1];
+            var uvS = s[2].Split(')')[1].Split('=')[1];
+             
+
         }
 
         public override string ToString()
