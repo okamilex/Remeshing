@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HarmonicMapper", "HarmonicM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{5E25464F-BB8C-47F2-9D12-998317332D18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdaptiveRemeshing", "AdaptiveRemeshing\AdaptiveRemeshing.csproj", "{670A2E5E-99AB-4062-AEC5-F6502991C5D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{5E25464F-BB8C-47F2-9D12-998317332D18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E25464F-BB8C-47F2-9D12-998317332D18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E25464F-BB8C-47F2-9D12-998317332D18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{670A2E5E-99AB-4062-AEC5-F6502991C5D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{670A2E5E-99AB-4062-AEC5-F6502991C5D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{670A2E5E-99AB-4062-AEC5-F6502991C5D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{670A2E5E-99AB-4062-AEC5-F6502991C5D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
