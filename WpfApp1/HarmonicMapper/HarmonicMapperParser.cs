@@ -15,7 +15,7 @@ namespace HarmonicMapper
 
         List<Node> nodes = new List<Node>();
 
-        void SaveAndShow(int i = -1)
+        public void SaveAndShow(int i = -1)
         {
             var max = Graph.Nodes.Max(n => Math.Abs(n.X));
 
@@ -39,7 +39,7 @@ namespace HarmonicMapper
                     var twoD = "";
                     if (node.TwoDX != null && node.TwoDY != null)
                         twoD = " uv=(" + node.TwoDX + " " + node.TwoDY + ")";
-                    swi = swi + "Vertex " + node.NodeID + " " + node.X + " " + node.Y + " " + node.Z + " {rgb=(" + node.RGB + ")" + twoD + "}" + "\n";
+                    swi = swi + "Vertex " + node.NodeID + " " + node.X + " " + node.Y + " " + node.Z + " {rgb=(" + node.RGBString + ")" + twoD + "}" + "\n";
                 }
                 foreach (var polygonForWrit in Graph.Polygons)
                 {
@@ -55,15 +55,16 @@ namespace HarmonicMapper
             }
         }
 
-        void LoadObj()
+        public void LoadObj()
         {
             List<String> poligonSrtings = new List<string>();
+            MFilePath = "C:\\Users\\alex_\\Desktop\\ДИПЛОМ\\HarmonicMapper\\demo\\Alex\\Alex.m";
             StreamReader sr = new StreamReader(MFilePath);
             //StreamReader sr = new StreamReader(@"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\MaleLow.obj");
             while (!sr.EndOfStream)
             {
                 var s = sr.ReadLine();
-                if (!string.IsNullOrEmpty(s))
+                if (!string.IsNullOrEmpty(s) && s[0] != '#')
                 {
                     var lit = s.Split(' ');
                     if (lit[0].Equals("Vertex"))
@@ -80,9 +81,9 @@ namespace HarmonicMapper
             foreach (var str in poligonSrtings)
             {
                 var li = str.Split(' ');
-                var a = nodes[int.Parse(li[1]) - 1];
-                var b = nodes[int.Parse(li[2]) - 1];
-                var c = nodes[int.Parse(li[3]) - 1];
+                var a = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[3]));
+                var b = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[4]));
+                var c = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[5]));
                 Graph.Polygons.Add(new Model.Polygon(a, b, c));
             }
         }

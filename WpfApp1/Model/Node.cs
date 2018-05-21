@@ -17,7 +17,15 @@ namespace Model
         public double? TwoDX { get; set; }
         public double? TwoDY { get; set; }
 
-        public Color RGB { get; set; }
+        private Color rgb;
+
+        public Color RGB
+        {
+            get => rgb;
+            set => rgb = value;
+        }
+
+        public String RGBString => RGB.R + " " + RGB.G + " " + RGB.B;
 
         public int i { get; set; }
         public int j { get; set; }
@@ -60,6 +68,7 @@ namespace Model
 
         public Node()
         {
+            RGB = new Color(0,0,0);
         }
 
         public double Deethtenth(Node A, Node B, Node C)
@@ -211,12 +220,12 @@ namespace Model
             var l = s[0].Split(' ');
             NodeID = int.Parse(l[1]);
             
-            X = double.Parse(l[2]);
-            Y = double.Parse(l[3]);
-            Z = double.Parse(l[4]);
+            X = double.Parse(l[3]);
+            Y = double.Parse(l[4]);
+            Z = double.Parse(l[5]);
 
-            var rgbS = s[2].Split(')')[0].Split('=')[1];
-            var uvS = s[2].Split(')')[1].Split('=')[1];
+            //var rgbS = s[1].Split(')')[0].Split('=')[1];
+            //var uvS = s[1].Split(')')[1].Split('=').Last();
              
 
         }

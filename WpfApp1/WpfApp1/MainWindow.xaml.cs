@@ -19,6 +19,7 @@ using System.Windows.Media.Converters;
 using System.Xml.Linq;
 using Model;
 using AdaptiveRemeshing;
+using HarmonicMapper;
 
 namespace WpfApp1
 {
@@ -55,9 +56,13 @@ namespace WpfApp1
 
         private void Button2_Click(object sender, RoutedEventArgs e)
         {
-             //Remesh2();
-             //Remesh2B();
-             Algo.Remesh2C();
+            //Remesh2();
+            //Remesh2B();
+            //Algo.Remesh2C();
+
+            var parser = new HarmonicMapperParser();
+            parser.LoadObj();
+            parser.SaveAndShow();
         }
 
         private void Gen_Click(object sender, RoutedEventArgs e)
