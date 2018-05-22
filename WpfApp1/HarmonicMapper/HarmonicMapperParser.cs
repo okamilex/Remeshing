@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Windows;
+
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -57,6 +59,7 @@ namespace HarmonicMapper
 
         public void LoadObj()
         {
+            var swi = string.Empty;
             List<String> poligonSrtings = new List<string>();
             MFilePath = "C:\\Users\\alex_\\Desktop\\ДИПЛОМ\\HarmonicMapper\\demo\\Alex\\Alex.m";
             StreamReader sr = new StreamReader(MFilePath);
@@ -78,13 +81,39 @@ namespace HarmonicMapper
                     }
                 }
             }
+            nodes = nodes.OrderBy(n => n.NodeID).ToList();
+            var min = nodes.Min(n => n.NodeID);
+            var max = nodes.Max(n => n.NodeID);
+            var t = new List<int>();
+            for (int i = 0; i <= max; i++)
+            {
+                t.Add(0);
+            }
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                var node = nodes[i];
+                t[node.NodeID] = i + 1;
+                swi = swi + "v " + node.X + " " + node.Y + " " + node.Z + "\n";
+            }
             foreach (var str in poligonSrtings)
             {
                 var li = str.Split(' ');
-                var a = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[3]));
-                var b = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[4]));
-                var c = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[5]));
-                Graph.Polygons.Add(new Model.Polygon(a, b, c));
+                //var a = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[3]));
+                //var b = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[4]));
+                //var c = nodes.FirstOrDefault(n => n.NodeID == int.Parse(li[5]));
+
+                //var a = nodes[t[int.Parse(li[3])]];
+                //var b = nodes[t[int.Parse(li[4])]];
+                //var c = nodes[t[int.Parse(li[5])]];
+
+                //Graph.Polygons.Add(new Model.Polygon(a, b, c));
+                swi = swi + "f " + t[int.Parse(li[3])] + " " + t[int.Parse(li[4])] + " " + t[int.Parse(li[5])] +
+                      "\n";
+            }
+
+            using (StreamWriter sw = new StreamWriter(@"D:\alex2.obj"))
+            {
+                sw.Write(swi);
             }
         }
     }

@@ -119,10 +119,13 @@ namespace Model
 
         public static Edge GetEdge(Node a, Node b, int i)
         {
-            var edge = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(a) && e.Nodes.Contains(b));
+            var edge = a.Edges.FirstOrDefault(e => e.Nodes.Contains(a) && e.Nodes.Contains(b));
             if (edge != null)
                 return edge;
-            return new Edge(a, b, i);
+            var newEdge = new Edge(a, b, i);
+            a.Edges.Add(newEdge);
+            b.Edges.Add(newEdge);
+            return newEdge;
         }
         public static int GetID(int i)
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SharpDX;
+using SharpDX.Direct3D9;
 
 namespace Model
 {
@@ -13,6 +14,8 @@ namespace Model
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
+
+        public List<Edge> Edges = new List<Edge>(); 
 
         public double? TwoDX { get; set; }
         public double? TwoDY { get; set; }
