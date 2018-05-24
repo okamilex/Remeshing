@@ -189,7 +189,7 @@ namespace WpfApp1
             var sum = crossings.Sum();
             var avr = crossings.Average();
             Avr.Content = avr;
-            var dis = crossings.Sum(x => x - avr) / crossings.Count;
+            var dis = crossings.Sum(x => (x - avr) * (x - avr)) / crossings.Count;
             Dis.Content = dis;
         }
 
