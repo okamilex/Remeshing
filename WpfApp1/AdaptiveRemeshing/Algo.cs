@@ -13,9 +13,9 @@ namespace AdaptiveRemeshing
         {
             for (int i = 0; i < 5; i++)
             {
-                Split();
-                Colaps();
-                Flip();
+                //Split();
+                //Colaps();
+                //Flip();
                 Shift();
             }
         }

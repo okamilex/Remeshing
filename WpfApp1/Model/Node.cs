@@ -8,7 +8,7 @@ using SharpDX.Direct3D9;
 
 namespace Model
 {
-    public class Node
+    public class Node 
     {
         public int NodeID { get; set; }
         public double X { get; set; }
@@ -265,10 +265,35 @@ namespace Model
             //Z = dn*Math.Sin(r);
         }
 
+        public Vector3 normsl
+        {
+            get
+            {
+                var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
+                var norms = polygons.Select(p => p.getnorm).ToList();
+                
+                var n = new Vector3();
+                foreach (var norm in norms)
+                {
+                    n += norm;
+                }
+                return n;
+            }
+        }
+
         public void Shift()
         {
+            var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
             var nodes = Graph.Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList()
                 .Select(e => e.Nodes.FirstOrDefault(n => n.NodeID != NodeID)).ToList();
+            var es = Graph.Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList();
+
+            var pX = 1.0 / Valence * (nodes.Sum(n => n.X));
+            var pY = 1.0 / Valence * (nodes.Sum(n => n.Y));
+            var pZ = 1.0 / Valence * (nodes.Sum(n => n.Z));
+
+
+
             var nodesByD = nodes.Where(n => n.D - D < 0.5).ToList();
             var C = new Node { X = nodes.Average(n => n.X), Y = nodesByD.Average(n => n.Y), Z = nodesByD.Average(n => n.Z) };
 

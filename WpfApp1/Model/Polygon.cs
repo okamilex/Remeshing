@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SharpDX;
 
 namespace Model
 {
@@ -67,6 +68,29 @@ namespace Model
             Node node = GetC(edge);
             var result = edge.Cross(node);
             return result;
+        }
+
+        public Vector3 getnorm
+        {
+            get
+            {
+                Vector3 n = new Vector3();
+
+                double mult = 0;
+                //-- a - общая вершина двух векторов --// 
+                n[0] = (float) ((Nodes[1].Y - Nodes[0].Y) * (Nodes[2].Z - Nodes[0].Z) - (Nodes[1].Z - Nodes[0].Z) * (Nodes[2].Y - Nodes[0].Y));
+                n[1] = (float) ((Nodes[2].X - Nodes[0].X) * (Nodes[1].Z - Nodes[0].Z) - (Nodes[1].X - Nodes[0].X) * (Nodes[2].Z - Nodes[0].Z));
+                n[2] = (float) ((Nodes[1].X - Nodes[0].X) * (Nodes[2].Y - Nodes[0].Y) - (Nodes[2].X - Nodes[0].X) * (Nodes[1].Y - Nodes[0].Y));
+
+                mult += Nodes[0].X * n[0];
+                mult += Nodes[0].Y * n[1];
+                mult += Nodes[0].Z * n[2];
+
+                if (mult < 0)
+                    for (int j = 0; j < 3; j++)
+                        n[j] = -n[j];
+                return n;
+            }
         }
     }
 }
