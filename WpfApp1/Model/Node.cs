@@ -41,7 +41,31 @@ namespace Model
             }
         }
 
-        public bool CanRemove
+        private double[,] Iprivate;
+
+        public double[,] I
+        {
+            get
+            {
+                if (Iprivate == null)
+                {
+                    Iprivate = new double[3, 3];
+                    for (var i = 0; i < 3; i++)
+                    {
+                        for (var j = 0; j < 3; j++)
+                        {
+                            if (i == j)
+                                I[i, j] = 1;
+                            else
+                                I[i, j] = 0;
+                        }
+                    }
+                }
+                return Iprivate;
+            }
+        }
+
+public bool CanRemove
         {
             get { return Valence == 6; }
         }
@@ -212,7 +236,7 @@ namespace Model
         public Node(String s, int id)
         {
             NodeID = id;
-            var l = s.Split(' ');
+            var l = s.Split(' ').Where(p => p != "").ToList();
             X = double.Parse(l[1]);
             Y = double.Parse(l[2]);
             Z = double.Parse(l[3]);
@@ -272,39 +296,110 @@ namespace Model
                 var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
                 var norms = polygons.Select(p => p.getnorm).ToList();
                 
-                var n = new Vector3();
+                var no = new Vector3();
                 foreach (var norm in norms)
                 {
-                    n += norm;
+                    no += norm;
                 }
-                return n;
+                var l = no.Length();
+                for (int i = 0; i < 3; i++)
+                {
+                    no[i] = no[i] / l;
+                }
+                return no;
             }
+        }
+
+        public static double[,] Mult(double[,] A, double[,] B, int m, int l, int n)
+        {
+            var c = new double[m, n];
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+
+                    c[i, j] = 0;
+
+                }
+            }
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    for (int k = 0; k < l; k++)
+                    {
+                        c[i, j] += A[i, k] * B[k, j];
+                    }
+                }
+            }
+            return c;
         }
 
         public void Shift()
         {
-            var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
+            //var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
             var nodes = Graph.Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList()
                 .Select(e => e.Nodes.FirstOrDefault(n => n.NodeID != NodeID)).ToList();
-            var es = Graph.Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList();
+            //var es = Graph.Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList();
 
-            var pX = 1.0 / Valence * (nodes.Sum(n => n.X));
-            var pY = 1.0 / Valence * (nodes.Sum(n => n.Y));
-            var pZ = 1.0 / Valence * (nodes.Sum(n => n.Z));
+            var g = new double[3, 1];
+            g[0, 0] = X;
+            g[1, 0] = Y;
+            g[2, 0] = Z;
+
+            var gD = new double[3, 1];
+            var v = Valence;
+
+            gD[0, 0] = 1.0 / v * (nodes.Sum(n => n.X));
+            gD[1, 0] = 1.0 / v * (nodes.Sum(n => n.Y));
+            gD[2, 0] = 1.0 / v * (nodes.Sum(n => n.Z));
+
+            var norm = new double[3, 1];
+            var normT = new double[1, 3];
+            var normlPreCalc = normsl;
+            for (int i = 0; i < 3; i++)
+            {
+                normT[0, i] = norm[i, 0] = normlPreCalc[i];
+            }
+
+            var lamda = 0.5;
+            var nn = Mult(norm, normT, 3, 1, 3);
+            var pp = new double[3, 1];
+            for (int i = 0; i < 3; i++)
+            {
+                pp[i, 0] = gD[i, 0] - g[i, 0];
+            }
+            var Inn = new double[3, 3];
+            for (int i = 0; i < 3; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    Inn[i, j] = I[i, j] - nn[i, j];
+                }
+            }
+            var Innpp = Mult(Inn, pp, 3, 3, 1);
+            for (int i = 0; i < 3; i++)
+            {
+                Innpp[i, 0] = Innpp[i, 0] * lamda;
+            }
+            X = X + Innpp[0, 0];
+            Y = Y + Innpp[1, 0];
+            Z = Z + Innpp[2, 0];
 
 
 
-            var nodesByD = nodes.Where(n => n.D - D < 0.5).ToList();
-            var C = new Node { X = nodes.Average(n => n.X), Y = nodesByD.Average(n => n.Y), Z = nodesByD.Average(n => n.Z) };
 
-            var d = C.D;
-            var sign = Math.Asin(C.Y / d);
-            double r = sign > 0 ? Math.Acos(C.Z / d) : 2 * Math.PI - Math.Acos(C.Z / d);
-            var dn = D;
-            if (Math.Abs(X) < 4.75)
-                X = C.X;
-            Y = C.Y;
-            Z = C.Z;
+            //var nodesByD = nodes.Where(n => n.D - D < 0.5).ToList();
+            //var C = new Node { X = nodes.Average(n => n.X), Y = nodesByD.Average(n => n.Y), Z = nodesByD.Average(n => n.Z) };
+
+            //var d = C.D;
+            //var sign = Math.Asin(C.Y / d);
+            //double r = sign > 0 ? Math.Acos(C.Z / d) : 2 * Math.PI - Math.Acos(C.Z / d);
+            //var dn = D;
+            //if (Math.Abs(X) < 4.75)
+            //    X = C.X;
+            //Y = C.Y;
+            //Z = C.Z;
             //Y = dn*Math.Sin(r);
             //Z = dn*Math.Cos(r);
             //var t = Edge.GetEdge(this, C, 0).Length;

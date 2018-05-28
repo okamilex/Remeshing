@@ -233,7 +233,7 @@ namespace Model
 
         public void Split()
         {
-            var C = A;
+             var C = A;
             var D = B;
             var polygons = Graph.Polygons.Where(p => p.Edges.Any(e => e.Nodes.Contains(A) && e.Nodes.Contains(B)));
             var E = polygons.FirstOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
@@ -244,6 +244,8 @@ namespace Model
             {
                 Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
             }
+            C.Edges.Remove(this);
+            D.Edges.Remove(this);
 
 
             Create(C, D, E, F);
@@ -260,6 +262,8 @@ namespace Model
             {
                 Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
             }
+            A.Edges.Remove(this);
+            B.Edges.Remove(this);
 
             var N = new Node(A, B);
             var allEdges = Graph.Edges.Where(e =>
@@ -326,10 +330,22 @@ namespace Model
             var e3 = GetEdge(D, N, 3);
             var e4 = GetEdge(F, N, 4);
 
-            var eo1 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(E));
-            var eo2 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(E));
-            var eo3 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(F));
-            var eo4 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(F));
+            var eo1 = C.Edges.FirstOrDefault(e => e.Nodes.Contains(E));
+            var eo2 = D.Edges.FirstOrDefault(e => e.Nodes.Contains(E));
+            var eo3 = D.Edges.FirstOrDefault(e => e.Nodes.Contains(F));
+            var eo4 = C.Edges.FirstOrDefault(e => e.Nodes.Contains(F));
+
+            if (eo1 == null)
+                eo1 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(E));
+
+            if (eo2 == null)
+                eo2 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(E));
+
+            if (eo3 == null)
+                eo3 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(F));
+
+            if (eo4 == null)
+                eo4 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(F));
 
             if (eo1 != null)
             {
@@ -371,6 +387,7 @@ namespace Model
                 var E = polygons.FirstOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
                 var F = polygons.LastOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
 
+                var test = Graph.Polygons.Where(p => p.Nodes.Contains(A) || p.Nodes.Contains(B)); 
                 var v = (C.Valence + B.Valence + E.Valence + F.Valence) / 4;
                 var a = (Math.Abs(C.Valence - v) + Math.Abs(D.Valence - v) + Math.Abs(E.Valence - v) +
                          Math.Abs(F.Valence - v));

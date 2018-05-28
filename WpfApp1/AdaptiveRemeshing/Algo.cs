@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,14 +10,24 @@ namespace AdaptiveRemeshing
 {
     public static class Algo
     {
+        public static string LoadPath = @"C:\Users\alex_\source\repos\WpfApp1\WpfApp1\test1.obj";
+        public static string SavePath = @"D:\Study\git\Remeshing\WpfApp1\WpfApp1\algor";
+        public static string Name = "common";
+
+        private static double l = 0.2;
+
         public static void Remesh1()
         {
             for (int i = 0; i < 5; i++)
             {
-                //Split();
-                //Colaps();
-                //Flip();
+                Split();
+                SaveAndShow(i, "Split");
+                Colaps();
+                SaveAndShow(i, "Colaps");
+                Flip();
+                SaveAndShow(i, "Flip");
                 Shift();
+                SaveAndShow(i, "Shift");
             }
         }
 
@@ -120,7 +131,7 @@ namespace AdaptiveRemeshing
             var m = Edge.GetID((0));
             while (true)
             {
-                var edge = Graph.Edges.FirstOrDefault(e => e.EdgeID > i);
+                var edge = Graph.Edges.FirstOrDefault(e => e.EdgeID > i && e.Length > (4.0 / 3.0) * l);
                 if (edge == null || edge.EdgeID > m)
                     break;
                 i = edge.EdgeID;
@@ -144,7 +155,7 @@ namespace AdaptiveRemeshing
                 //    var t = 0;
                 //    t = t + 5;
                 //}
-                if (edge.Length > (4.0 / 3.0) * 1)
+                if (edge.Length > (4.0 / 3.0) * l)
                 {
                     j = edge.EdgeID;
                     edge.Split();
@@ -161,7 +172,7 @@ namespace AdaptiveRemeshing
             var m = Edge.GetID((0));
             while (true)
             {
-                var edge = Graph.Edges.FirstOrDefault(e => e.EdgeID > i);
+                var edge = Graph.Edges.FirstOrDefault(e => e.EdgeID > i && e.Length < (4.0 / 5.0) * l);
                 if (edge == null || edge.EdgeID > m)
                     break;
                 i = edge.EdgeID;
@@ -185,7 +196,7 @@ namespace AdaptiveRemeshing
                 //    var t = 0;
                 //    t = t + 5;
                 //}
-                if (edge.Length < (4.0 / 5.0) / 1)
+                if (edge.Length < (4.0 / 5.0) * l)
                 {
                     k = edge.EdgeID;
                     //var ty = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == 3));
@@ -237,8 +248,11 @@ namespace AdaptiveRemeshing
         }
         public static void Shift()
         {
-            foreach (var node in Graph.Nodes)
+            var i = 0;
+            var nodes = Graph.Nodes;
+            foreach (var node in nodes)
             {
+                i++;
                 node.Shift();
             }
         }
@@ -248,6 +262,51 @@ namespace AdaptiveRemeshing
             foreach (var node in Graph.Nodes)
             {
                 node.Shift2();
+            }
+        }
+
+
+        public static void SaveAndShow(int i = -1, string a = "")
+        {
+            var maxX = Graph.Nodes.Max(n => n.X);
+            var minX = Graph.Nodes.Min(n => n.X);
+
+            var maxY = Graph.Nodes.Max(n => n.Y);
+            var minY = Graph.Nodes.Min(n => n.Y);
+
+            var maxZ = Graph.Nodes.Max(n => n.Z);
+            var minZ = Graph.Nodes.Min(n => n.Z);
+
+            var s = SavePath;
+            if (i > -1)
+            {
+                var s_ext = s;
+                s = s_ext + Name + i + a + ".obj";
+            }
+            using (StreamWriter sw = new StreamWriter(s))
+            {
+                var swi = string.Empty;
+                var list = Graph.Nodes.OrderBy(n => n.NodeID).ToList().Select((Value, Index) => new { Value, Index });
+                foreach (var pare in list)
+                {
+                    pare.Value.NodeID = pare.Index + 1;
+                }
+
+                foreach (var node in Graph.Nodes.OrderBy(n => n.NodeID))
+                {
+                    swi = swi + "v " + (node.X - minX - (maxX - minX) / 2) + " " + (node.Y - minY - (maxY - minY) / 2) + " " + (node.Z - minZ - (maxZ - minZ) / 2) + "\n";
+                }
+                foreach (var polygonForWrit in Graph.Polygons)
+                {
+                    var nodesOfP = polygonForWrit.Nodes;
+
+                    if (nodesOfP.Count > 2)
+                    {
+                        swi = swi + "f " + nodesOfP[0].NodeID + " " + nodesOfP[1].NodeID + " " + nodesOfP[2].NodeID +
+                              "\n";
+                    }
+                }
+                sw.Write(swi);
             }
         }
     }

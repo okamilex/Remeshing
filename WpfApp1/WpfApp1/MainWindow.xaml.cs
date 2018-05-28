@@ -52,6 +52,8 @@ namespace WpfApp1
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            var s = System.IO.Path.GetFileNameWithoutExtension(ShowPath);
+            Algo.Name = s;
             Algo.Remesh1();
         }
 
@@ -129,15 +131,22 @@ namespace WpfApp1
             Show();
         }
 
-        void SaveAndShow(int i = -1)
+        void SaveAndShow(int i = -1, string a = "")
         {
-            var max = Graph.Nodes.Max(n => Math.Abs(n.X));
+            var maxX = Graph.Nodes.Max(n => n.X);
+            var minX = Graph.Nodes.Min(n => n.X);
+
+            var maxY = Graph.Nodes.Max(n => n.Y);
+            var minY = Graph.Nodes.Min(n => n.Y);
+
+            var maxZ = Graph.Nodes.Max(n => n.Z);
+            var minZ = Graph.Nodes.Min(n => n.Z);
 
             var s = SavePath;
             if (i > -1)
             {
                 var s_ext = System.IO.Path.GetFileNameWithoutExtension(s);
-                s = s_ext + i + ".obj";
+                s = s_ext + i + a + ".obj";
             }
             using (StreamWriter sw = new StreamWriter(s))
             {
@@ -150,7 +159,7 @@ namespace WpfApp1
 
                 foreach (var node in Graph.Nodes.OrderBy(n => n.NodeID))
                 {
-                    swi = swi + "v " + (node.X - max / 2) + " " + node.Y + " " + node.Z + "\n";
+                    swi = swi + "v " + (node.X - minX - (maxX - minX) / 2) + " " + (node.Y - minY - (maxY - minY) / 2) + " " + (node.Z - minZ - (maxZ - minZ) / 2) + "\n";
                 }
                 foreach (var polygonForWrit in Graph.Polygons)
                 {
