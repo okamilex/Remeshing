@@ -49,6 +49,11 @@ namespace Model
             }
             PolygonID = max;
             Edges = new List<Edge> { Edge.GetEdge(a, b, 1), Edge.GetEdge(b, c, 2), Edge.GetEdge(c, a, 3) };
+            foreach (var edge in Edges)
+            {
+                edge.Polygons.Add(this);
+            }
+            Edge.CalcID(Edges.ToArray());
         }
 
         public override string ToString()

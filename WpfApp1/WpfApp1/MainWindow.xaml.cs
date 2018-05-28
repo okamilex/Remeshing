@@ -157,9 +157,12 @@ namespace WpfApp1
                     pare.Value.NodeID = pare.Index + 1;
                 }
 
+                var xc = minX + (maxX - minX) / 2;
+                var yc = minY + (maxY - minY) / 2;
+                var zc = minZ + (maxZ - minZ) / 2;
                 foreach (var node in Graph.Nodes.OrderBy(n => n.NodeID))
                 {
-                    swi = swi + "v " + (node.X - minX - (maxX - minX) / 2) + " " + (node.Y - minY - (maxY - minY) / 2) + " " + (node.Z - minZ - (maxZ - minZ) / 2) + "\n";
+                    swi = swi + "v " + (node.X - xc) + " " + (node.Y - yc) + " " + (node.Z - zc) + "\n";
                 }
                 foreach (var polygonForWrit in Graph.Polygons)
                 {
@@ -196,7 +199,6 @@ namespace WpfApp1
                 crossings.Add(polygon.GetCross(polygon.Edges[1]));
                 crossings.Add(polygon.GetCross(polygon.Edges[2]));
             }
-            var sum = crossings.Sum();
             var avr = crossings.Average();
             Avr.Content = avr;
             var dis = crossings.Sum(x => (x - avr) * (x - avr)) / crossings.Count;

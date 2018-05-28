@@ -166,10 +166,14 @@ public bool CanRemove
                     {
                         return;
                     }
-                    var listIDs = polygons.Select(p => p.PolygonID).ToList();
-                    foreach (var polygon in listIDs)
+                    //var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                    foreach (var polygon in polygons)
                     {
-                        Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                        foreach (var edge in polygon.Edges)
+                        {
+                            edge.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
+                        }
+                        Graph.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                     }
                     Graph.Polygons.Add(new Polygon(polygonNodes[0], polygonNodes[1], polygonNodes[2]));
                 }
@@ -201,10 +205,14 @@ public bool CanRemove
                         {
                             return;
                         }
-                        var listIDs = polygons.Select(p => p.PolygonID).ToList();
-                        foreach (var polygon in listIDs)
+                        //var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                        foreach (var polygon in polygons)
                         {
-                            Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                            foreach (var edge in polygon.Edges)
+                            {
+                                edge.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
+                            }
+                            Graph.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                         }
                         Graph.Polygons.Add(new Polygon(polygonNodes[0], polygonNodes[1], polygonNodes[2]));
                     }
@@ -338,7 +346,7 @@ public bool CanRemove
         public void Shift()
         {
             //var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
-            var nodes = Graph.Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList()
+            var nodes = Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList()
                 .Select(e => e.Nodes.FirstOrDefault(n => n.NodeID != NodeID)).ToList();
             //var es = Graph.Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList();
 
