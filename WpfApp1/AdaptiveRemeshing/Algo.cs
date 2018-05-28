@@ -281,7 +281,7 @@ namespace AdaptiveRemeshing
             if (i > -1)
             {
                 var s_ext = s;
-                s = s_ext + Name + i + a + ".obj";
+                s = s_ext + Name + (10 + i) + a + ".obj";
             }
             using (StreamWriter sw = new StreamWriter(s))
             {

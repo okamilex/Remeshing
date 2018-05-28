@@ -181,15 +181,17 @@ namespace Model
         {
             var nodesByAC = Graph.Nodes.Where(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID && n.NodeID != C.NodeID && XR(n, C)).ToList();
             var polygons = nodesByAC.SelectMany(n => Graph.Polygons.Where(p => p.Nodes.Any(np => np.NodeID == n.NodeID)));
-            //var listIDs = polygons.Select(p => p.PolygonID).ToList();
+            
             foreach (var polygon in polygons)
             {
                 foreach (var edge in polygon.Edges)
                 {
                     edge.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                 }
-                Graph.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
             }
+            var listIDs = polygons.Select(p => p.PolygonID).ToList();
+            foreach (var polygon in listIDs)
+                Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
         }
 
         public void AdaptEdge()
@@ -248,11 +250,17 @@ namespace Model
             var E = polygons.FirstOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
             var F = polygons.LastOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
 
+            var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
             var listIDs = polygons.Select(p => p.PolygonID).ToList();
             foreach (var polygon in listIDs)
             {
                 Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                foreach (var edge in polygonsEdges)
+                {
+                    edge.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                }
             }
+                
             C.Edges.Remove(this);
             D.Edges.Remove(this);
 
@@ -268,15 +276,18 @@ namespace Model
             //var C = polygons.SelectMany(e => e.Nodes).Distinct().FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
             //var D = polygons.SelectMany(e => e.Nodes).Distinct().FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID && n.NodeID != C.NodeID);
             //var secondLayer = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == A.NodeID) ^ p.Nodes.Any(n => n.NodeID == B.NodeID)).ToList();
-            //var listIDs = polygons.Select(p => p.PolygonID).ToList();
-            foreach (var polygon in polygons)
+
+            var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
+            var listIDs = polygons.Select(p => p.PolygonID).ToList();
+            foreach (var polygon in listIDs)
             {
-                foreach (var edge in polygon.Edges)
+                Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                foreach (var edge in polygonsEdges)
                 {
-                    edge.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
+                    edge.Polygons.RemoveAll(p => p.PolygonID == polygon);
                 }
-                Graph.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
             }
+
             A.Edges.Remove(this);
             B.Edges.Remove(this);
 
@@ -432,8 +443,10 @@ namespace Model
                     {
                         edgeP.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                     }
-                    Graph.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                 }
+                var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                foreach (var polygon in listIDs)
+                    Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
 
                 var edge = GetEdge(F, E, 1);
 
@@ -471,14 +484,15 @@ namespace Model
                 var E = polygons.FirstOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
                 var F = polygons.LastOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
 
-                //var listIDs = polygons.Select(p => p.PolygonID).ToList();
-                foreach (var polygon in polygons)
+                var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
+                var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                foreach (var polygon in listIDs)
                 {
-                    foreach (var edgeP in polygon.Edges)
+                    Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                    foreach (var edgeP in polygonsEdges)
                     {
-                        edgeP.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
+                        edgeP.Polygons.RemoveAll(p => p.PolygonID == polygon);
                     }
-                    Graph.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                 }
 
                 var edge = GetEdge(F, E, 1);

@@ -72,7 +72,7 @@ public bool CanRemove
 
         public int Valence
         {
-            get { return Graph.Edges.Count(e => e.Nodes.Any(n => n.NodeID == NodeID)); }
+            get { return Edges.Count(e => e.Nodes.Any(n => n.NodeID == NodeID)); }
         }
 
         public int ValenceD
@@ -173,8 +173,10 @@ public bool CanRemove
                         {
                             edge.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                         }
-                        Graph.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                     }
+                    var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                    foreach (var polygon in listIDs)
+                        Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
                     Graph.Polygons.Add(new Polygon(polygonNodes[0], polygonNodes[1], polygonNodes[2]));
                 }
                 else
@@ -212,8 +214,11 @@ public bool CanRemove
                             {
                                 edge.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
                             }
-                            Graph.Polygons.RemoveAll(p => p.PolygonID == polygon.PolygonID);
+                            
                         }
+                        var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                        foreach (var polygon in listIDs)
+                            Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
                         Graph.Polygons.Add(new Polygon(polygonNodes[0], polygonNodes[1], polygonNodes[2]));
                     }
                 }
@@ -345,6 +350,8 @@ public bool CanRemove
 
         public void Shift()
         {
+            if (Edges.Count(e => e.Polygons.Count < 2) >= 2) return;
+
             //var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
             var nodes = Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList()
                 .Select(e => e.Nodes.FirstOrDefault(n => n.NodeID != NodeID)).ToList();
@@ -418,6 +425,7 @@ public bool CanRemove
             //}
             //Y = dn*Math.Cos(r);
             //Z = dn*Math.Sin(r);
+
         }
     }
 }

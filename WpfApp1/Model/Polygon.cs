@@ -37,6 +37,10 @@ namespace Model
             }
             PolygonID = max;
             Edges = new List<Edge> { a, b, c };
+            foreach (var edge in Edges)
+            {
+                edge.Polygons.Add(this);
+            }
         }
 
         public Polygon(Node a, Node b, Node c)
