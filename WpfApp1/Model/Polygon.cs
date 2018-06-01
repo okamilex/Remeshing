@@ -49,7 +49,7 @@ namespace Model
             if (Graph.Polygons.Any())
             {
                 max = Graph.Polygons.Count + 1;
-                //max = Math.Max(Graph.Polygons.Max(p => p.PolygonID) + 1, max);
+                
             }
             PolygonID = max;
             Edges = new List<Edge> { Edge.GetEdge(a, b, 1), Edge.GetEdge(b, c, 2), Edge.GetEdge(c, a, 3) };

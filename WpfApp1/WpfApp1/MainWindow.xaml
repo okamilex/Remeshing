@@ -6,7 +6,7 @@
         xmlns:HelixToolkit="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="650">
+        Title="MainWindow" Height="1200" Width="650">
     <Grid>
 
         <HelixToolkit:HelixViewport3D ZoomExtentsWhenLoaded="True" Width="650" Margin="0,0,0,35">
@@ -40,7 +40,10 @@
         <Button Content="Save" HorizontalAlignment="Left" Margin="200,600,0,0" VerticalAlignment="Top" Width="75" Click="Save_Click"/>
         <Button Content="First" HorizontalAlignment="Left" Margin="300,600,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
         <Button Content="Second" HorizontalAlignment="Left" Margin="400,600,0,0" VerticalAlignment="Top" Width="75" Click="Button2_Click"/>
-        <Label Name="Avr" Margin="400,600,0,0" Width="50" Height="50"></Label>
-        <Label Name="Dis" Margin="530,600,0,0" Width="50" Height="50"></Label>
+        <Label Name="Avr" Margin="400,400,0,0" Width="50" Height="50"></Label>
+        <Label Name="Dis" Margin="530,400,0,0" Width="50" Height="50"></Label>
+        <Label x:Name="Avr_Copy" Margin="400,609.5,96,9.5" Width="50" Height="50"/>
+        <Label x:Name="Dis_Copy" Margin="530,609.5,31,9.5" Width="50" Height="50"/>
+        <Label x:Name="Avr_Cop2y" Margin="400,808.5,96,9.5" Width="50" Height="50"/>
     </Grid>
 </Window>

@@ -166,7 +166,7 @@ namespace WpfApp1
                 }
                 foreach (var polygonForWrit in Graph.Polygons)
                 {
-                    var nodesOfP = polygonForWrit.Nodes;
+                    var nodesOfP = polygonForWrit.Nodes.OrderBy(n => n.NodeID).ToList();
 
                     if (nodesOfP.Count > 2)
                     {
@@ -203,6 +203,17 @@ namespace WpfApp1
             Avr.Content = avr;
             var dis = crossings.Sum(x => (x - avr) * (x - avr)) / crossings.Count;
             Dis.Content = dis;
+        
+            var l = Graph.Edges.Average(e => e.Length);
+            var ld = Graph.Edges.Average(e =>
+            {
+                var p = e.Length * 100 / 0.2;
+                return Math.Abs(p - 100);
+            });
+            Avr_Copy.Content = l;
+            Dis_Copy.Content = ld;
+            var v = Graph.Nodes.Count(n => n.Valence != 6) / (Graph.Nodes.Count * 1.0);
+            Avr_Cop2y.Content = v;
         }
 
         void genObj()

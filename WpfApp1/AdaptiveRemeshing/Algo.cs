@@ -14,7 +14,7 @@ namespace AdaptiveRemeshing
         public static string SavePath = @"D:\Study\git\Remeshing\WpfApp1\WpfApp1\algor";
         public static string Name = "common";
 
-        private static double l = 0.2;
+        private static double l = 1;
 
         public static void Remesh1()
         {
@@ -129,9 +129,10 @@ namespace AdaptiveRemeshing
             var j = 0;
             var k = 0;
             var m = Edge.GetID((0));
+            var list = Graph.EdgesOrderBy;
             while (true)
             {
-                var edge = Graph.Edges.FirstOrDefault(e => e.EdgeID > i && e.Length > (4.0 / 3.0) * l);
+                var edge = list.FirstOrDefault(e => e.EdgeID > i && e.Length > (4.0 / 3.0) * l);
                 if (edge == null || edge.EdgeID > m)
                     break;
                 i = edge.EdgeID;
@@ -170,9 +171,10 @@ namespace AdaptiveRemeshing
             var j = 0;
             var k = 0;
             var m = Edge.GetID((0));
+            var list = Graph.EdgesOrderBy;
             while (true)
             {
-                var edge = Graph.Edges.FirstOrDefault(e => e.EdgeID > i && e.Length < (4.0 / 5.0) * l);
+                var edge = list.FirstOrDefault(e => e.EdgeID > i && e.Length < (4.0 / 5.0) * l);
                 if (edge == null || edge.EdgeID > m)
                     break;
                 i = edge.EdgeID;
@@ -212,40 +214,18 @@ namespace AdaptiveRemeshing
             var j = 0;
             var k = 0;
             var m = Edge.GetID((0));
+            var list = Graph.EdgesOrderBy;
             while (true)
             {
-                var edge = Graph.Edges.FirstOrDefault(e => e.EdgeID > i);
+                var edge = list.FirstOrDefault(e => e.EdgeID > i);
                 if (edge == null || edge.EdgeID > m)
                     break;
                 i = edge.EdgeID;
 
-                //if (i == 42 || test.Any(p => p < 2))
-                //if (i == 972 || Graph.Polygons.Any(p => p.Edges == null) ||
-                //    Graph.Polygons.Any(p => p.Edges.Any(e => e == null)) || Graph.Polygons.Any(p => p.Nodes.Count > 3))
-                //{
-                //    var ty = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == 3));
-                //    var t = 0;
-                //    t = t + 5;
-
-                //}
-                //var test = Graph.Edges.Select(p =>
-                //    Graph.Polygons.Count(edgeP => edgeP.Nodes.Contains(p.A) && edgeP.Nodes.Contains(p.B)));
-                //if (test.Any(p => p < 2) || test.Any(p => p > 2))
-                //{
-                //    var tu =Graph.Edges.Where(p =>
-                //        Graph.Polygons.Count(edgeP => edgeP.Nodes.Contains(p.A) && edgeP.Nodes.Contains(p.B)) > 2).ToList();
-                //    var ty = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == 3));
-                //    var t = 0;
-                //    t = t + 5;
-                //}
-                if (edge.Length < (4.0 / 5.0) / 1)
-                {
-                    k = edge.EdgeID;
-                    //var ty = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == 3));
-                    edge.Flip();
-                }
+                edge.Flip();
             }
         }
+
         public static void Shift()
         {
             var i = 0;
@@ -281,7 +261,9 @@ namespace AdaptiveRemeshing
             if (i > -1)
             {
                 var s_ext = s;
-                s = s_ext + Name + (10 + i) + a + ".obj";
+                var data = DateTime.Now;
+                s = s_ext + Name + (i) + a + data.ToShortDateString().Replace("/", "_") + "_" + data.ToShortTimeString().Replace(":", "_") + ".obj";
+
             }
             using (StreamWriter sw = new StreamWriter(s))
             {

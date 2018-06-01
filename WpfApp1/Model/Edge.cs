@@ -122,10 +122,23 @@ namespace Model
 
         public static Edge GetEdge(Node a, Node b, int i)
         {
+            if ((a.NodeID == 29 || b.NodeID == 29) && (a.NodeID == 1700 || b.NodeID == 1700))
+            {
+                int ip = 0;
+                ip++;
+            }
             var edge = a.Edges.FirstOrDefault(e => e.Nodes.Contains(a) && e.Nodes.Contains(b));
             if (edge != null)
                 return edge;
+            edge = b.Edges.FirstOrDefault(e => e.Nodes.Contains(a) && e.Nodes.Contains(b));
+            if (edge != null)
+                return edge;
             var newEdge = new Edge(a, b, i);
+            if (a.Edges.Any(e => e.Nodes.Contains(a) && e.Nodes.Contains(b)) || b.Edges.Any(e => e.Nodes.Contains(a) && e.Nodes.Contains(b)))
+            {
+                int ip = 0;
+                ip++;
+            }
             a.Edges.Add(newEdge);
             b.Edges.Add(newEdge);
             return newEdge;
@@ -138,6 +151,11 @@ namespace Model
         }
         public static int GetID(int i)
         {
+            if (MaxID + i == 7969 || MaxID + i == 7972)
+            {
+                int ip = 0;
+                ip++;
+            }
             return MaxID + i;
         }
 
@@ -220,11 +238,7 @@ namespace Model
         public Edge(Node a, Node b, int i)
         {
             EdgeID = GetID(i);
-            if (EdgeID == 162)
-            {
-                var t = 0;
-                t = t + 0;
-            }
+
             Nodes = new List<Node>();
             Nodes.Add(a);
             Nodes.Add(b);
@@ -247,25 +261,30 @@ namespace Model
             var polygons = Polygons;
             if (Polygons.Count != 2)
                 polygons = Graph.Polygons.Where(p => p.Edges.Any(e => e.Nodes.Contains(A) && e.Nodes.Contains(B))).ToList();
-            var E = polygons.FirstOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
-            var F = polygons.LastOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
-
-            var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
-            var listIDs = polygons.Select(p => p.PolygonID).ToList();
-            foreach (var polygon in listIDs)
+            if (polygons.Count == 2)
             {
-                Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
-                foreach (var edge in polygonsEdges)
+                var E = polygons.FirstOrDefault().Nodes
+                    .FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
+                var F = polygons.LastOrDefault().Nodes
+                    .FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
+
+                var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
+                var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                foreach (var polygon in listIDs)
                 {
-                    edge.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                    Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                    foreach (var edge in polygonsEdges)
+                    {
+                        edge.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                    }
                 }
+
+                C.Edges.Remove(this);
+                D.Edges.Remove(this);
+
+
+                Create(C, D, E, F);
             }
-                
-            C.Edges.Remove(this);
-            D.Edges.Remove(this);
-
-
-            Create(C, D, E, F);
         }
 
         public void Colaps()
@@ -276,76 +295,98 @@ namespace Model
             //var C = polygons.SelectMany(e => e.Nodes).Distinct().FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
             //var D = polygons.SelectMany(e => e.Nodes).Distinct().FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID && n.NodeID != C.NodeID);
             //var secondLayer = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == A.NodeID) ^ p.Nodes.Any(n => n.NodeID == B.NodeID)).ToList();
-
-            var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
-            var listIDs = polygons.Select(p => p.PolygonID).ToList();
-            foreach (var polygon in listIDs)
+            if (polygons.Count == 2)
             {
-                Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
-                foreach (var edge in polygonsEdges)
+                var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
+                var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                foreach (var polygon in listIDs)
                 {
-                    edge.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                    var edgeIDs = new List<int>();
+                    var polygonsIDs = new List<Polygon>();
+                    Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                    foreach (var edge in polygonsEdges)
+                    {
+                        if (edge.Polygons.Any(p => p.PolygonID == polygon) && edge.EdgeID != EdgeID)
+                        {
+                            edgeIDs.Add(edge.EdgeID);
+                            edge.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                            polygonsIDs.Add(edge.Polygons.First());
+                        }
+                        if (edge.EdgeID == EdgeID)
+                        {
+                            edge.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                        }
+                    }
+                    foreach (var edge in polygonsEdges)
+                    {
+                        if (edgeIDs.Contains(edge.EdgeID))
+                        {
+                            edge.Polygons.Add(polygonsIDs.First(p => !edge.Polygons.Contains(p)));
+                        }
+                    }
                 }
+
+                A.Edges.Remove(this);
+                B.Edges.Remove(this);
+
+                var N = new Node(A, B);
+                var allEdges = Graph.Edges.Where(e =>
+                    e.Nodes.Any(n => n.NodeID == A.NodeID || n.NodeID == B.NodeID)).ToList();
+                foreach (var edge in allEdges)
+                {
+                    edge.Nodes.Remove(A);
+                    edge.Nodes.Remove(B);
+                    edge.Nodes.Add(N);
+                    edge.EdgeID = GetID(1);
+                    Edge.CalcID(new Edge[] {edge});
+                    N.Edges.Add(edge);
+                }
+                //foreach (var polygon in secondLayer)
+                //{
+                //    if (polygon.PolygonID == 21)
+                //    {
+                //        var t = 0;
+                //        t = t + 0;
+                //    }
+                //    var notDone = true;
+                //    Edge edge;
+                //    //edge = polygon.Edges.FirstOrDefault(e => (e.Nodes.Contains(C) && e.Nodes.Contains(A)) || (e.Nodes.Contains(C) && e.Nodes.Contains(B)));
+                //    //if (edge != null)
+                //    //{
+                //    //    polygon.Edges.Remove(edge);
+                //    //    polygon.Edges.Add(edgeC);
+
+                //    //}
+                //    //edge = polygon.Edges.FirstOrDefault(e => (e.Nodes.Contains(D) && e.Nodes.Contains(A)) || (e.Nodes.Contains(D) && e.Nodes.Contains(B)));
+                //    //if (edge != null)
+                //    //{
+                //    //    polygon.Edges.Remove(edge);
+                //    //    polygon.Edges.Add(edgeD);
+
+                //    //}
+                //    if (notDone)
+                //    {
+                //        var edges = polygon.Edges.Where(e =>
+                //            e.Nodes.Any(n => n.NodeID == A.NodeID || n.NodeID == B.NodeID)).ToList();
+                //        if (edges.Any())
+                //        {
+                //            edge = edges[0];
+                //            edge.Nodes.Remove(A);
+                //            edge.Nodes.Remove(B);
+                //            edge.Nodes.Add(N);
+                //            edge.EdgeID = GetID(1);
+                //        }
+                //        if (edges.Count > 1)
+                //        {
+                //            edge = edges[1];
+                //            edge.Nodes.Remove(A);
+                //            edge.Nodes.Remove(B);
+                //            edge.Nodes.Add(N);
+                //            edge.EdgeID = GetID(1);
+                //        }
+                //    }
+                //}
             }
-
-            A.Edges.Remove(this);
-            B.Edges.Remove(this);
-
-            var N = new Node(A, B);
-            var allEdges = Graph.Edges.Where(e =>
-                e.Nodes.Any(n => n.NodeID == A.NodeID || n.NodeID == B.NodeID)).ToList();
-            foreach (var edge in allEdges)
-            {
-                edge.Nodes.Remove(A);
-                edge.Nodes.Remove(B);
-                edge.Nodes.Add(N);
-                edge.EdgeID = GetID(1);
-            }
-            //foreach (var polygon in secondLayer)
-            //{
-            //    if (polygon.PolygonID == 21)
-            //    {
-            //        var t = 0;
-            //        t = t + 0;
-            //    }
-            //    var notDone = true;
-            //    Edge edge;
-            //    //edge = polygon.Edges.FirstOrDefault(e => (e.Nodes.Contains(C) && e.Nodes.Contains(A)) || (e.Nodes.Contains(C) && e.Nodes.Contains(B)));
-            //    //if (edge != null)
-            //    //{
-            //    //    polygon.Edges.Remove(edge);
-            //    //    polygon.Edges.Add(edgeC);
-
-            //    //}
-            //    //edge = polygon.Edges.FirstOrDefault(e => (e.Nodes.Contains(D) && e.Nodes.Contains(A)) || (e.Nodes.Contains(D) && e.Nodes.Contains(B)));
-            //    //if (edge != null)
-            //    //{
-            //    //    polygon.Edges.Remove(edge);
-            //    //    polygon.Edges.Add(edgeD);
-
-            //    //}
-            //    if (notDone)
-            //    {
-            //        var edges = polygon.Edges.Where(e =>
-            //            e.Nodes.Any(n => n.NodeID == A.NodeID || n.NodeID == B.NodeID)).ToList();
-            //        if (edges.Any())
-            //        {
-            //            edge = edges[0];
-            //            edge.Nodes.Remove(A);
-            //            edge.Nodes.Remove(B);
-            //            edge.Nodes.Add(N);
-            //            edge.EdgeID = GetID(1);
-            //        }
-            //        if (edges.Count > 1)
-            //        {
-            //            edge = edges[1];
-            //            edge.Nodes.Remove(A);
-            //            edge.Nodes.Remove(B);
-            //            edge.Nodes.Add(N);
-            //            edge.EdgeID = GetID(1);
-            //        }
-            //    }
-            //}
         }
 
         public void Create(Node C, Node D, Node E, Node F)
@@ -402,12 +443,6 @@ namespace Model
         {
             get
             {
-                //Random Rand = new Random();
-                //if (Rand.Next() % 10 == 0)
-                //{
-                //    return true;
-                //}
-                //return false;
                 var C = A;
                 var D = B;
                 var polygons = Graph.Polygons.Where(p => p.Edges.Any(e => e.Nodes.Contains(A) && e.Nodes.Contains(B)));
@@ -474,6 +509,11 @@ namespace Model
 
         public void Flip()
         {
+            if (EdgeID == 99)
+            {
+                int ip = 0;
+                ip++;
+            }
             if (NeedFlip)
             {
                 var C = A;
@@ -481,60 +521,73 @@ namespace Model
                 var polygons = Polygons;
                 if (Polygons.Count != 2)
                     polygons = Graph.Polygons.Where(p => p.Edges.Any(e => e.Nodes.Contains(A) && e.Nodes.Contains(B))).ToList();
-                var E = polygons.FirstOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
-                var F = polygons.LastOrDefault().Nodes.FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
-
-                var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
-                var listIDs = polygons.Select(p => p.PolygonID).ToList();
-                foreach (var polygon in listIDs)
+                if (polygons.Count == 2)
                 {
-                    Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
-                    foreach (var edgeP in polygonsEdges)
+                    var E = polygons.FirstOrDefault().Nodes
+                        .FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
+                    var F = polygons.LastOrDefault().Nodes
+                        .FirstOrDefault(n => n.NodeID != A.NodeID && n.NodeID != B.NodeID);
+
+                    var polygonsEdges = polygons.SelectMany(p => p.Edges).Distinct().ToList();
+                    var listIDs = polygons.Select(p => p.PolygonID).ToList();
+                    foreach (var polygon in listIDs)
                     {
-                        edgeP.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                        Graph.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                        foreach (var edgeP in polygonsEdges)
+                        {
+                            edgeP.Polygons.RemoveAll(p => p.PolygonID == polygon);
+                        }
+                    }
+
+                    var edge = GetEdge(F, E, 1);
+                    Edge.CalcID(new Edge[] {edge});
+
+                    var eo1 = polygonsEdges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(E));
+                    var eo2 = polygonsEdges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(F));
+                    var eo3 = polygonsEdges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(F));
+                    var eo4 = polygonsEdges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(E));
+
+
+                    if (eo1 == null)
+                        eo1 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(E));
+
+
+                    if (eo2 == null)
+                        eo2 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(F));
+
+
+                    if (eo3 == null)
+                        eo3 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(F));
+
+
+                    if (eo4 == null)
+                        eo4 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(E));
+
+
+
+                    if ((eo1 != null) && (eo2 != null))
+                    {
+                        Graph.Polygons.Add(new Polygon(edge, eo1, eo2));
+                        eo1.EdgeID = GetID(1);
+                        Edge.CalcID(new Edge[] {eo1});
+                        eo2.EdgeID = GetID(1);
+                        Edge.CalcID(new Edge[] {eo2});
+
+                    }
+                    if ((eo3 != null) && (eo4 != null))
+                    {
+                        Graph.Polygons.Add(new Polygon(edge, eo3, eo4));
+                        eo3.EdgeID = GetID(1);
+                        Edge.CalcID(new Edge[] {eo3});
+                        eo4.EdgeID = GetID(1);
+                        Edge.CalcID(new Edge[] {eo4});
+                    }
+                    if (Graph.Edges.Where(e => e.Polygons.Count != 2).ToList().Any())
+                    {
+                        int i = 0;
+                        i++;
                     }
                 }
-
-                var edge = GetEdge(F, E, 1);
-                Edge.CalcID(new Edge[] { edge });
-
-                var eo1 = C.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(E));
-                var eo2 = C.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(F));
-                var eo3 = D.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(F));
-                var eo4 = D.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(E));
-
-
-                if (eo1 == null)
-                    eo1 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(E));
-           
-
-                if (eo2 == null)
-                    eo2 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(C) && e.Nodes.Contains(F));
-    
-
-                if (eo3 == null)
-                    eo3 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(F));
-               
-
-                if (eo4 == null)
-                    eo4 = Graph.Edges.FirstOrDefault(e => e.Nodes.Contains(D) && e.Nodes.Contains(E));
-
-
-
-                if ((eo1 != null) && (eo2 != null))
-                {
-                    Graph.Polygons.Add(new Polygon(edge, eo1, eo2));
-                    eo1.EdgeID = GetID(1);
-                    eo2.EdgeID = GetID(1);
-
-                }
-                if ((eo3 != null) && (eo4 != null))
-                {
-                    Graph.Polygons.Add(new Polygon(edge, eo3, eo4));
-                    eo3.EdgeID = GetID(1);
-                    eo4.EdgeID = GetID(1);
-                }
-
             }
         }
     }

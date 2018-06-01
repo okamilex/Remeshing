@@ -14,10 +14,25 @@ namespace Model
         {
             get
             {
-                return Polygons.Select(x => x.Edges).SelectMany(x => x).Distinct().OrderBy(e => e.EdgeID).ToList();
+                return Polygons.Select(x => x.Edges).SelectMany(x => x).Distinct().ToList();
             }
         }
         public static List<Node> Nodes
+        {
+            get
+            {
+                return Polygons.Select(x => x.Edges.Select(e => e.Nodes).SelectMany(e => e)).SelectMany(x => x).Distinct().ToList();
+            }
+        }
+
+        public static List<Edge> EdgesOrderBy
+        {
+            get
+            {
+                return Polygons.Select(x => x.Edges).SelectMany(x => x).Distinct().OrderBy(e => e.EdgeID).ToList();
+            }
+        }
+        public static List<Node> NodesOrderBy
         {
             get
             {

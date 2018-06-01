@@ -14,6 +14,7 @@ namespace Model
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
+        public static double Lamda = 1;
 
         public List<Edge> Edges = new List<Edge>(); 
 
@@ -307,7 +308,11 @@ public bool CanRemove
             get
             {
                 var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
-                var norms = polygons.Select(p => p.getnorm).ToList();
+                var polygonsE = Edges.SelectMany(e => e.Polygons).Distinct().ToList();
+                if (polygonsE.Count != polygons.Count)
+                    polygonsE = polygons;
+
+                var norms = polygonsE.Select(p => p.getnorm).ToList();
                 
                 var no = new Vector3();
                 foreach (var norm in norms)
@@ -350,12 +355,13 @@ public bool CanRemove
 
         public void Shift()
         {
-            if (Edges.Count(e => e.Polygons.Count < 2) >= 2) return;
-
-            //var polygons = Graph.Polygons.Where(p => p.Nodes.Any(n => n.NodeID == NodeID)).ToList();
+            if (Edges.Count(e => e.Polygons.Count < 2) >= 2)
+                return;
+            
             var nodes = Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList()
                 .Select(e => e.Nodes.FirstOrDefault(n => n.NodeID != NodeID)).ToList();
-            //var es = Graph.Edges.Where(e => e.Nodes.Any(n => n.NodeID == NodeID)).ToList();
+            if (nodes.Count == 0) return;
+    
 
             var g = new double[3, 1];
             g[0, 0] = X;
@@ -377,7 +383,7 @@ public bool CanRemove
                 normT[0, i] = norm[i, 0] = normlPreCalc[i];
             }
 
-            var lamda = 0.5;
+            var lamda = Lamda;
             var nn = Mult(norm, normT, 3, 1, 3);
             var pp = new double[3, 1];
             for (int i = 0; i < 3; i++)
@@ -400,32 +406,6 @@ public bool CanRemove
             X = X + Innpp[0, 0];
             Y = Y + Innpp[1, 0];
             Z = Z + Innpp[2, 0];
-
-
-
-
-            //var nodesByD = nodes.Where(n => n.D - D < 0.5).ToList();
-            //var C = new Node { X = nodes.Average(n => n.X), Y = nodesByD.Average(n => n.Y), Z = nodesByD.Average(n => n.Z) };
-
-            //var d = C.D;
-            //var sign = Math.Asin(C.Y / d);
-            //double r = sign > 0 ? Math.Acos(C.Z / d) : 2 * Math.PI - Math.Acos(C.Z / d);
-            //var dn = D;
-            //if (Math.Abs(X) < 4.75)
-            //    X = C.X;
-            //Y = C.Y;
-            //Z = C.Z;
-            //Y = dn*Math.Sin(r);
-            //Z = dn*Math.Cos(r);
-            //var t = Edge.GetEdge(this, C, 0).Length;
-            //if (t > 0.1)
-            //{
-            //    var y = 0;
-            //    y = y + 5;
-            //}
-            //Y = dn*Math.Cos(r);
-            //Z = dn*Math.Sin(r);
-
         }
     }
 }
